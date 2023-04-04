@@ -28,7 +28,6 @@ Admin::Admin(const User& obj)
 
 void Admin::delete_user()
 {
-	render::renderFrame(console_x, console_y, (char)220, (char)223, (char)219);
 
 	std::string logins;
 
@@ -37,15 +36,19 @@ void Admin::delete_user()
 
 	start:
 
-		render::gotoxy(25, 13);
+		system("cls");
+
+		render::renderFrame(console_x, console_y - 4, (char)220, (char)223, (char)219);
+
+		render::gotoxy(25, 11);
 
 		std::cout << "Tip: If you want to delete SEVERAL users,";
 
-		render::gotoxy(15, 14);
+		render::gotoxy(15, 12);
 
 		std::cout << "you can type their logins like that : User1,User2,User3";
 
-		render::gotoxy(10, 15);
+		render::gotoxy(10, 13);
 
 		std::cout << "Enter login you want to delete: ";
 
@@ -53,7 +56,7 @@ void Admin::delete_user()
 		{
 			std::cout << " ";
 		}
-		render::gotoxy(42, 15);
+		render::gotoxy(42, 13);
 
 		logins.clear();
 
@@ -125,11 +128,11 @@ void Admin::delete_user()
 		while (ch != 'y' and ch != 'n')
 		{
 
-			render::gotoxy(20, 17);
+			render::gotoxy(10, 15);
 
-			std::cout << "                                                   ";
+			std::cout << "                                                                    ";
 
-			render::gotoxy(20, 17);
+			render::gotoxy(10, 15);
 
 			std::cout << "Are you sure you want delete this logins? y or n: ";
 
@@ -140,6 +143,11 @@ void Admin::delete_user()
 				MessageBox(0, (LPCWSTR)L"Wrong letter", (LPCWSTR)L"Warning", MB_ICONWARNING);
 				continue;
 			}
+		}
+
+		if (ch == 'n')
+		{
+			goto start;
 		}
 
 		std::vector<std::string> buff;
@@ -203,8 +211,6 @@ void Admin::edit_user()
 		system("cls");
 
 		render::renderFrame(console_x, console_y - 4, (char)220, (char)223, (char)219);
-
-	start:
 
 		render::gotoxy(22, 9);
 
@@ -1027,10 +1033,7 @@ void Admin::delete_test()
 	}
 	else
 	{
-		MessageBox(0, (LPCWSTR)L"Error with loading file :(", (LPCWSTR)L"Warning", MB_ICONWARNING);
-		std::ofstream error_logs("logs.txt", std::ios::app);
-		error_logs << __DATE__ << ", " << __TIME__ << ", " << __FILE__ << ", " << __LINE__ << ", " << std::endl;
-		error_logs.close();
+		MessageBox(0, (LPCWSTR)L"You don't have categories yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
 		return;
 	}
 	categories.close();
@@ -1124,53 +1127,205 @@ start_category:
 
 void Admin::statistic()
 {
-	std::ifstream userbase("userbase.txt");
-	
-	std::string log;
-
-	std::vector<std::string> names;
-
-	if (userbase.is_open())
+	while (true)
 	{
-		std::getline(userbase, log);
-		while (std::getline(userbase, log))
+		system("cls");
+
+		int choice = Menu::select_vertical({ "Categories Statistic", "Test Statistic", "User Statistic" }, Center);
+
+		switch (choice)
 		{
-			names.push_back(log);
-		}
-
-		int stat = Menu::select_vertical(names, Center);
-
-		if (stat == -1)
-		{
-			return;
-		}
-
-		std::ifstream user_stat(names[stat] + "{}" + "Stat.txt");
-
-		if (user_stat.is_open())
-		{
-			while (std::getline(user_stat, log))
+			case -1:
 			{
-				std::cout << log << std::endl;
+				return;
 			}
-			system("pause");
+			case 0:
+			{
+				std::ifstream catbase("categories.txt");
+
+				std::string log;
+
+				std::vector<std::string> names;
+
+				if (catbase.is_open())
+				{
+					while (std::getline(catbase, log))
+					{
+						names.push_back(log);
+					}
+
+					if (names.size() == 0)
+					{
+						MessageBox(0, (LPCWSTR)L"No statistic yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
+						return;
+					}
+
+					int stat = Menu::select_vertical(names, Center);
+
+					if (stat == -1)
+					{
+						continue;
+					}
+
+					std::ifstream user_stat(names[stat] + "Stat'.txt");
+
+					if (user_stat.is_open())
+					{
+						while (std::getline(user_stat, log))
+						{
+							std::cout << log << std::endl;
+						}
+						system("pause");
+					}
+					else
+					{
+						MessageBox(0, (LPCWSTR)L"This category has no statistic yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
+						continue;
+					}
+					user_stat.close();
+				}
+				else
+				{
+					MessageBox(0, (LPCWSTR)L"Error with loading file :(", (LPCWSTR)L"Warning", MB_ICONWARNING);
+					std::ofstream error_logs("logs.txt", std::ios::app);
+					error_logs << __DATE__ << ", " << __TIME__ << ", " << __FILE__ << ", " << __LINE__ << ", " << std::endl;
+					error_logs.close();
+					return;
+				}
+				catbase.close();
+				break;
+			}
+			case 1:
+			{
+				std::ifstream catbase("categories.txt");
+
+				std::string log;
+
+				std::vector<std::string> names;
+
+				if (catbase.is_open())
+				{
+					while (std::getline(catbase, log))
+					{
+						names.push_back(log);
+					}
+
+					if (names.size() == 0)
+					{
+						MessageBox(0, (LPCWSTR)L"No statistic yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
+						continue;
+					}
+
+					int stat = Menu::select_vertical(names, Center);
+
+					if (stat == -1)
+					{
+						continue;
+					}
+
+					std::ifstream user_stat(names[stat] + "'.txt");
+
+					names.clear();
+
+					if (user_stat.is_open())
+					{
+						while (std::getline(user_stat, log))
+						{
+							names.push_back(log);
+						}
+						stat = Menu::select_vertical(names, Center);
+
+						if (stat == -1)
+						{
+							continue;
+						}
+
+						std::ifstream test_stat(names[stat] + "{}Stat.txt");
+
+						if (test_stat.is_open())
+						{
+							while (std::getline(test_stat, log))
+							{
+								std::cout << log << std::endl;
+							}
+							std::cout << std::endl;
+							system("pause");
+						}
+						else
+						{
+							MessageBox(0, (LPCWSTR)L"This test has no statistic yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
+							continue;
+						}
+						test_stat.close();
+					}
+					else
+					{
+						MessageBox(0, (LPCWSTR)L"This category has no tests yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
+						continue;
+					}
+					user_stat.close();
+				}
+				catbase.close();
+				break;
+			}
+			case 2:
+			{
+				std::ifstream userbase("userbase.txt");
+
+				std::string log;
+
+				std::vector<std::string> names;
+
+				if (userbase.is_open())
+				{
+					std::getline(userbase, log);
+					while (std::getline(userbase, log))
+					{
+						names.push_back(log);
+					}
+
+					if (names.size() == 0)
+					{
+						MessageBox(0, (LPCWSTR)L"No statistic yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
+						continue;
+					}
+
+					int stat = Menu::select_vertical(names, Center);
+
+					if (stat == -1)
+					{
+						continue;
+					}
+
+					std::ifstream user_stat(names[stat] + "{}" + "Stat.txt");
+
+					if (user_stat.is_open())
+					{
+						while (std::getline(user_stat, log))
+						{
+							std::cout << log << std::endl;
+						}
+						system("pause");
+					}
+					else
+					{
+						MessageBox(0, (LPCWSTR)L"This user don't have statistic yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
+						continue;
+					}
+					user_stat.close();
+				}
+				else
+				{
+					MessageBox(0, (LPCWSTR)L"Error with loading file :(", (LPCWSTR)L"Warning", MB_ICONWARNING);
+					std::ofstream error_logs("logs.txt", std::ios::app);
+					error_logs << __DATE__ << ", " << __TIME__ << ", " << __FILE__ << ", " << __LINE__ << ", " << std::endl;
+					error_logs.close();
+					return;
+				}
+				userbase.close();
+				break;
+			}
 		}
-		else
-		{
-			MessageBox(0, (LPCWSTR)L"This user don't have statistic yet!", (LPCWSTR)L"Warning", MB_ICONWARNING);
-			return;
-		}
-		user_stat.close();
+		continue;
 	}
-	else
-	{
-		MessageBox(0, (LPCWSTR)L"Error with loading file :(", (LPCWSTR)L"Warning", MB_ICONWARNING);
-		std::ofstream error_logs("logs.txt", std::ios::app);
-		error_logs << __DATE__ << ", " << __TIME__ << ", " << __FILE__ << ", " << __LINE__ << ", " << std::endl;
-		error_logs.close();
-		return;
-	}
-	userbase.close();
-	
-	
 }

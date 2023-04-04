@@ -134,13 +134,11 @@ void Student::choose_test()
 				float percent = (count_right / size) * 100;
 
 
-				std::ofstream user(Username + "{}" + names[category] + "{}" + temp + "'.txt", std::ofstream::trunc);
+				std::ofstream user(names[category] + "{}Stat.txt", std::ios::app);
 
 				if (user.is_open())
 				{
-					user << mark << std::endl;
-					user << percent << std::endl;
-					user << count_right << std::endl;
+					user << names[category] << " - Mark: " << mark << ", Percent: " << percent << ", Right Answers: " << count_right << std::endl;
 				}
 				else
 				{
@@ -165,9 +163,25 @@ void Student::choose_test()
 					error_logs.close();
 					return;
 				}
+
+				std::ofstream cat_stat(temp + "Stat'.txt", std::ios::app);
+
+				if (cat_stat.is_open())
+				{
+					cat_stat << names[category] << " - Mark: " << mark << ", Percent: " << percent << ", Right Answers: " << count_right << std::endl;
+				}
+				else
+				{
+					MessageBox(0, (LPCWSTR)L"Error with loading file :(", (LPCWSTR)L"Warning", MB_ICONWARNING);
+					std::ofstream error_logs("logs.txt", std::ios::app);
+					error_logs << __DATE__ << ", " << __TIME__ << ", " << __FILE__ << ", " << __LINE__ << ", " << std::endl;
+					error_logs.close();
+					return;
+				}
 				
 				user_stat.close();
 				user.close();
+				cat_stat.close();
 
 				system("cls");
 
